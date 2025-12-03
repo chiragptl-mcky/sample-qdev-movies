@@ -69,4 +69,79 @@ public class MovieService {
         }
         return Optional.ofNullable(movieMap.get(id));
     }
+
+    /**
+     * Ahoy matey! Search for movies using various criteria like a treasure hunt!
+     * This method filters the movie treasure chest based on name, id, and genre.
+     * 
+     * @param name Movie name to search for (partial match, case-insensitive)
+     * @param id Specific movie ID to find
+     * @param genre Genre to filter by (case-insensitive)
+     * @return List of movies matching the search criteria
+     */
+    public List<Movie> searchMovies(String name, Long id, String genre) {
+        logger.info("Ahoy! Starting treasure hunt for movies with criteria - name: {}, id: {}, genre: {}", 
+                   name, id, genre);
+        
+        List<Movie> searchResults = new ArrayList<>(movies);
+        
+        // Filter by movie name if provided - like searching for a specific treasure map!
+        if (name != null && !name.trim().isEmpty()) {
+            String searchName = name.trim().toLowerCase();
+            searchResults = searchResults.stream()
+                .filter(movie -> movie.getMovieName().toLowerCase().contains(searchName))
+                .collect(ArrayList::new, (list, movie) -> list.add(movie), ArrayList::addAll);
+            logger.debug("Arrr! After name filter '{}', found {} movies", name, searchResults.size());
+        }
+        
+        // Filter by ID if provided - hunting for a specific piece of treasure!
+        if (id != null && id > 0) {
+            searchResults = searchResults.stream()
+                .filter(movie -> movie.getId() == id)
+                .collect(ArrayList::new, (list, movie) -> list.add(movie), ArrayList::addAll);
+            logger.debug("Shiver me timbers! After ID filter '{}', found {} movies", id, searchResults.size());
+        }
+        
+        // Filter by genre if provided - sorting treasure by type!
+        if (genre != null && !genre.trim().isEmpty()) {
+            String searchGenre = genre.trim().toLowerCase();
+            searchResults = searchResults.stream()
+                .filter(movie -> movie.getGenre().toLowerCase().contains(searchGenre))
+                .collect(ArrayList::new, (list, movie) -> list.add(movie), ArrayList::addAll);
+            logger.debug("Batten down the hatches! After genre filter '{}', found {} movies", genre, searchResults.size());
+        }
+        
+        logger.info("Treasure hunt complete! Found {} movies matching the search criteria", searchResults.size());
+        return searchResults;
+    }
+
+    /**
+     * Validates search parameters to avoid scurvy bugs in our treasure hunt!
+     * 
+     * @param name Movie name parameter
+     * @param id Movie ID parameter  
+     * @param genre Genre parameter
+     * @return true if at least one valid search parameter is provided
+     */
+    public boolean hasValidSearchCriteria(String name, Long id, String genre) {
+        boolean hasName = name != null && !name.trim().isEmpty();
+        boolean hasId = id != null && id > 0;
+        boolean hasGenre = genre != null && !genre.trim().isEmpty();
+        
+        return hasName || hasId || hasGenre;
+    }
+
+    /**
+     * Get all unique genres from our treasure chest of movies!
+     * Useful for helping landlubbers know what genres be available.
+     * 
+     * @return List of unique genres
+     */
+    public List<String> getAllGenres() {
+        return movies.stream()
+            .map(Movie::getGenre)
+            .distinct()
+            .sorted()
+            .collect(ArrayList::new, (list, genre) -> list.add(genre), ArrayList::addAll);
+    }
 }

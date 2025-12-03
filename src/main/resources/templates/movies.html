@@ -3,13 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Movies This Month</title>
+    <title>Free Movies This Month - Pirate's Treasure Chest</title>
     <link rel="stylesheet" th:href="@{/css/movies.css}">
+    <style>
+        /* Pirate-themed search form styles */
+        .search-treasure-chest {
+            background: linear-gradient(135deg, #2c1810, #4a2c1a);
+            border: 2px solid #8b4513;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .search-title {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .search-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-field label {
+            color: #ffd700;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .search-field input, .search-field select {
+            padding: 10px;
+            border: 2px solid #8b4513;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        
+        .search-field input:focus, .search-field select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+        }
+        
+        .search-field input::placeholder {
+            color: #888;
+            font-style: italic;
+        }
+        
+        .search-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            grid-column: 1 / -1;
+            margin-top: 10px;
+        }
+        
+        .btn-pirate {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+        }
+        
+        .btn-search:hover {
+            background: linear-gradient(135deg, #a0522d, #cd853f);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #4a4a4a, #666666);
+            color: #ffffff;
+            border: 2px solid #888888;
+        }
+        
+        .btn-clear:hover {
+            background: linear-gradient(135deg, #666666, #888888);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .search-message {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .search-message.success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 2px solid #28a745;
+        }
+        
+        .search-message.warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 2px solid #ffc107;
+        }
+        
+        .search-message.error {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 2px solid #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-pirate {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Free Movies This Month</h1>
-        <div class="movies-grid">
+        <h1>Free Movies This Month - Pirate's Treasure Chest 🏴‍☠️</h1>
+        
+        <!-- Pirate Search Form -->
+        <div class="search-treasure-chest">
+            <h2 class="search-title">⚓ Search the Treasure Chest ⚓</h2>
+            <form class="search-form" th:action="@{/movies/search}" method="get">
+                <div class="search-field">
+                    <label for="name">Movie Name, ye scallywag:</label>
+                    <input type="text" 
+                           id="name" 
+                           name="name" 
+                           th:value="${searchName}"
+                           placeholder="Enter movie name, matey...">
+                </div>
+                
+                <div class="search-field">
+                    <label for="id">Movie ID (if ye know it):</label>
+                    <input type="number" 
+                           id="id" 
+                           name="id" 
+                           th:value="${searchId}"
+                           placeholder="Enter movie ID..."
+                           min="1">
+                </div>
+                
+                <div class="search-field">
+                    <label for="genre">Genre, arrr:</label>
+                    <select id="genre" name="genre">
+                        <option value="">All genres, me hearty</option>
+                        <option th:each="genre : ${genres}" 
+                                th:value="${genre}" 
+                                th:text="${genre}"
+                                th:selected="${genre == searchGenre}">Genre</option>
+                    </select>
+                </div>
+                
+                <div class="search-buttons">
+                    <button type="submit" class="btn-pirate btn-search">🔍 Hunt for Treasure!</button>
+                    <a th:href="@{/movies}" class="btn-pirate btn-clear">🧹 Clear the Deck</a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Search Results Message -->
+        <div th:if="${searchPerformed and searchMessage}" 
+             th:class="'search-message ' + (${#lists.isEmpty(movies)} ? 'error' : 'success')"
+             th:text="${searchMessage}">
+        </div>
+        
+        <!-- Movies Grid -->
+        <div class="movies-grid" th:if="${not #lists.isEmpty(movies)}">
             <div class="movie-card" th:each="movie : ${movies}">
                 <div class="movie-icon" th:text="${movie.icon}">🎬</div>
                 <h3 th:text="${movie.movieName}">Movie Title</h3>
@@ -28,6 +221,17 @@
                 </div>
                 <a th:href="@{/movies/{id}/details(id=${movie.id})}" class="details-btn">View Details</a>
             </div>
+        </div>
+        
+        <!-- No Movies Found Message -->
+        <div th:if="${searchPerformed and #lists.isEmpty(movies)}" class="search-message error">
+            <p>🏴‍☠️ Arrr! The treasure chest be empty for yer search, matey!</p>
+            <p>Try different search terms or <a th:href="@{/movies}" style="color: #ffd700;">return to all movies</a>.</p>
+        </div>
+        
+        <!-- Show all movies link when search is performed -->
+        <div th:if="${searchPerformed}" style="text-align: center; margin-top: 20px;">
+            <a th:href="@{/movies}" class="btn-pirate btn-clear">🏴‍☠️ Show All Movies in the Treasure Chest</a>
         </div>
     </div>
 </body>
